@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Like } from './Like';
 import { Users, Tweets } from '../db/db';
-// import { Likes } from './Like';
 
 export class Tweet{
     private _id: string;
@@ -36,21 +35,26 @@ export class Tweet{
         const qtdLikes = this.likes? this.likes.length : 0
         const qtdReplies = this.replies? this.replies.length : 0
         const user = Users.find((user) => user.id == this.userId)
+        let likeText = 'Ninguém curtiu ainda. Seja o primeiro :)'
+
+        if(qtdLikes == 1){
+            const replyUser = Users.find((user) => user.id == this.likes[0].userId)
+            likeText = `@${replyUser?.name} curtiu isso`
+        } else if(qtdLikes > 1){
+            const replyUser = Users.find((user) => user.id == this.likes[0].userId)
+            likeText = `@${replyUser?.name} e mais ${qtdLikes - 1} ${(qtdLikes-1 == 1? 'pessoa curtiu': 'pessoas curtiram')} isso`
+        }
 
         console.log('--------------------------------------------')
         console.log(`@${user?.name}: ${this.content}`)
-        console.log('--------------------------------------------')
-        console.log(`Curtidas: ${qtdLikes} | Respostas: ${qtdReplies}`)
-        console.log('--------------------------------------------')
+        console.log(`[${likeText}]`)
 
         console.log('Respostas: ')
         for(const reply of this.replies){
             const replyLikes = reply.likes? reply.likes.length : 0
 
             const replyUser = Users.find((user) => user.id == reply.userId)
-            console.log(`@${replyUser?.name}: ${reply.content}`)
-            console.log(`Curtidas: ${replyLikes}`)
-            console.log('--------------------------------------------')
+            console.log(`  > @${replyUser?.name}: ${reply.content}`)
 
         }
     }

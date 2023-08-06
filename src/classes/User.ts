@@ -24,8 +24,22 @@ export class User {
     }
 
     public createUser(){
-        Users.push(this)
-        console.log(`Usuário ${this.name} criado com sucesso!`)
+        try{
+            if(Users.find((user) => user.userName == this.userName) || Users.find((user) => user.email == this.email) || Users.find((user) => user.id == this.id)){
+                throw new Error('Usuário já existe.')
+             }
+    
+             if(this.password.length < 6){
+
+                throw new Error('Senha muito curta')
+             }
+    
+            Users.push(this)
+            console.log(`Usuário ${this.name} criado com sucesso!`)
+        } catch(error){
+            console.log(error)
+        }
+       
     }
 
     public sendTweet(tweet:Tweet):void{
@@ -81,12 +95,10 @@ export class User {
         }
 
         console.log('--------------------------------------------')
-        console.log(`Feed de ${this.name}`)
-        console.log('--------------------------------------------')
+        console.log(`Seu feed, ${this.name} \n`)
+
         for(const tweet of feedTweets){
-            const userName = Users.find((user) => user.id == tweet.userId)?.userName
-            console.log(`@${userName}: ${tweet.content}`)
-            console.log('--------------------------------------------')
+            tweet.show()
         }
     }
 
@@ -114,7 +126,7 @@ export class User {
         }
     }
 
-    likeTweet(tweetId:string){
+    public likeTweet(tweetId:string){
         const tweet = Tweets.find((tweet) => tweet.id == tweetId)
 
         if(!tweet){
@@ -125,6 +137,16 @@ export class User {
         }
     }
 
+    public showFollowers(){
+        console.log('--------------------------------------------')
+        console.log(`Seguidores de ${this.name} - ${this.followers.length} no total\n`)
+        for(const follower of this.followers){
+            console.log(`  > ${follower.name}`)
+        }
+        console.log('--------------------------------------------')
+    }
+    
+    // Getters e Setters
     public get id(): string {
         return this._id;
       }
